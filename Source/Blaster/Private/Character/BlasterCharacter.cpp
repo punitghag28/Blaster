@@ -16,7 +16,7 @@ ABlasterCharacter::ABlasterCharacter()
 	PrimaryActorTick.bCanEverTick = true;
 
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
-	CameraBoom->SetupAttachment(GetMesh());
+	CameraBoom->SetupAttachment(GetRootComponent());
 	CameraBoom->TargetArmLength = 600.0f;
 	CameraBoom->bUsePawnControlRotation = true;
 
@@ -25,6 +25,9 @@ ABlasterCharacter::ABlasterCharacter()
 	FollowCamera->bUsePawnControlRotation = false;
 
 	bUseControllerRotationYaw = false;
+	bUseControllerRotationRoll = false;
+	bUseControllerRotationPitch = false;
+
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 }
 
@@ -32,15 +35,18 @@ ABlasterCharacter::ABlasterCharacter()
 void ABlasterCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	
-	if (Controller)
-	{
-		UE_LOG(LogTemp, Display, TEXT("%s is possessed by %s"), *GetName(), *Controller->GetName());
-	}
-	else
-	{
-		UE_LOG(LogTemp, Error, TEXT("%s is not possessed"), *GetName());
-	}
+}
+
+// Called every frame
+void ABlasterCharacter::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+}
+
+// Called to bind functionality to input
+void ABlasterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+{
+	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
 	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
 	{
@@ -58,25 +64,12 @@ void ABlasterCharacter::BeginPlay()
 			}
 		}
 	}
-}
-
-// Called every frame
-void ABlasterCharacter::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
-}
-
-// Called to bind functionality to input
-void ABlasterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
-{
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
 	if (UEnhancedInputComponent* Input = CastChecked<UEnhancedInputComponent>(PlayerInputComponent))
 	{
 		if (MoveAction)
 		{
-			UE_LOG(LogTemp, Display, TEXT("Binding MoveAction"));
+			UE_LOG(LogTemp, Display, TEXT("Binding MoveInput"));
 			Input->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ABlasterCharacter::MoveInput);
 		}
 		else
@@ -86,7 +79,7 @@ void ABlasterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 
 		if (LookAction)
 		{
-			UE_LOG(LogTemp, Display, TEXT("Binding LookAction"));
+			UE_LOG(LogTemp, Display, TEXT("Binding LookInput"));
 			Input->BindAction(LookAction, ETriggerEvent::Triggered, this, &ABlasterCharacter::LookInput);
 		}
 		else
@@ -96,17 +89,10 @@ void ABlasterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 
 		if (JumpAction)
 		{
-			UE_LOG(LogTemp, Display, TEXT("Binding JumpAction"));
+			UE_LOG(LogTemp, Display, TEXT("Binding JumpInput"));
 			Input->BindAction(JumpAction, ETriggerEvent::Started, this, &ABlasterCharacter::JumpInput);
-		}
-		else
-		{
-			UE_LOG(LogTemp, Error, TEXT("JumpAction is null!"));
-		}
 
-		if (JumpAction)
-		{
-			UE_LOG(LogTemp, Display, TEXT("Binding JumpAction"));
+			UE_LOG(LogTemp, Display, TEXT("Binding StopJumpInput"));
 			Input->BindAction(JumpAction, ETriggerEvent::Completed, this, &ABlasterCharacter::StopJumpingInput);
 		}
 		else
@@ -122,11 +108,12 @@ void ABlasterCharacter::MoveInput(const FInputActionInstance& Instance)
 		return;
 
 	FVector2D MovementDirection = Instance.GetValue().Get<FVector2D>();
-	const FRotator Rotation(0.f, Controller->GetControlRotation().Yaw, Controller->GetControlRotation().Roll);
+	const FRotator Rotation(0.f, Controller->GetControlRotation().Yaw, 0.f);
 	const FVector RightDirection(FRotationMatrix(Rotation).GetUnitAxis(EAxis::Y));
 	const FVector ForwardDirection(FRotationMatrix(Rotation).GetUnitAxis(EAxis::X));
 	AddMovementInput(RightDirection, MovementDirection.X);
 	AddMovementInput(ForwardDirection, MovementDirection.Y);
+
 }
 
 void ABlasterCharacter::LookInput(const FInputActionInstance& Instance)
