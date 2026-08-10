@@ -22,6 +22,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void ShowPlayerNetRole(APawn* InPawn);
 
+	UFUNCTION(BlueprintCallable)
+	void ShowPlayerName(APawn* InPawn);
+
 	UPROPERTY(meta = (BindWidget))
 	UTextBlock* DisplayText;
 

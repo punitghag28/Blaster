@@ -23,11 +23,16 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
+	virtual void OnRep_PlayerState() override;
+	virtual void PossessedBy(AController* NewController) override;
 
 	void MoveInput(const FInputActionInstance& Instance);
 	void LookInput(const FInputActionInstance& Instance);
 	void JumpInput(const FInputActionInstance& Instance);
 	void StopJumpingInput(const FInputActionInstance& Instance);
+
+private:
+	void UpdateOverheadWidgetText();
 
 
 public:

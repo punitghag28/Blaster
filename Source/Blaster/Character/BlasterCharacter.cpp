@@ -5,10 +5,11 @@
 
 #include "Camera/CameraComponent.h"
 #include "Components/WidgetComponent.h"
-#include "GameFramework/CharacterMovementComponent.h"
-#include "GameFramework/SpringArmComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
+#include "GameFramework/SpringArmComponent.h"
+#include "HUD/OverheadWidget.h"
 
 // Sets default values
 ABlasterCharacter::ABlasterCharacter()
@@ -39,6 +40,25 @@ ABlasterCharacter::ABlasterCharacter()
 void ABlasterCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+
+	// For Server pawn on its own POV
+	UpdateOverheadWidgetText();
+}
+
+void ABlasterCharacter::OnRep_PlayerState()
+{
+	Super::OnRep_PlayerState();
+
+	// For Client pawns on their own POV
+	UpdateOverheadWidgetText();
+}
+
+void ABlasterCharacter::PossessedBy(AController* NewController) 
+{
+	Super::PossessedBy(NewController);
+	
+	// For Client pawns on Server POV
+	UpdateOverheadWidgetText();
 }
 
 // Called every frame
@@ -135,5 +155,16 @@ void ABlasterCharacter::JumpInput(const FInputActionInstance& Instance)
 void ABlasterCharacter::StopJumpingInput(const FInputActionInstance& Instance)
 {
 	Super::StopJumping();
+}
+
+void ABlasterCharacter::UpdateOverheadWidgetText()
+{
+	if (OverheadWidget)
+	{
+		if (UOverheadWidget* OverheadWidgetCasted = Cast<UOverheadWidget>(OverheadWidget->GetWidget()))
+		{
+			OverheadWidgetCasted->ShowPlayerName(this);
+		}
+	}
 }
 
