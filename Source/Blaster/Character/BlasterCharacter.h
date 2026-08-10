@@ -8,6 +8,8 @@
 
 #include "BlasterCharacter.generated.h"
 
+class UWidgetComponent;
+
 UCLASS()
 class BLASTER_API ABlasterCharacter : public ACharacter
 {
@@ -27,12 +29,6 @@ protected:
 	void JumpInput(const FInputActionInstance& Instance);
 	void StopJumpingInput(const FInputActionInstance& Instance);
 
-private:
-	UPROPERTY(VisibleAnywhere, Category = Camera)
-	class USpringArmComponent* CameraBoom;
-
-	UPROPERTY(VisibleAnywhere, Category = Camera)
-	class UCameraComponent* FollowCamera;
 
 public:
 	UPROPERTY(EditAnywhere, Category = Input)
@@ -47,4 +43,13 @@ public:
 	UPROPERTY(EditAnywhere, Category = Input)
 	UInputAction* JumpAction;
 
+private:
+	UPROPERTY(VisibleAnywhere, Category = Camera)
+	class USpringArmComponent* CameraBoom;
+
+	UPROPERTY(VisibleAnywhere, Category = Camera)
+	class UCameraComponent* FollowCamera;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	UWidgetComponent* OverheadWidget;
 };
