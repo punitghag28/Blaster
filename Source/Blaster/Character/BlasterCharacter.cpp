@@ -3,6 +3,7 @@
 
 #include "Character/BlasterCharacter.h"
 
+#include "BlasterComponents/CombatComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Components/WidgetComponent.h"
 #include "EnhancedInputSubsystems.h"
@@ -36,6 +37,9 @@ ABlasterCharacter::ABlasterCharacter()
 
 	OverheadWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("OverheadWidget"));
 	OverheadWidget->SetupAttachment(RootComponent);
+
+	CombatComponent = CreateDefaultSubobject<UCombatComponent>(TEXT("CombatComponent"));
+	CombatComponent->SetIsReplicated(true);
 }
 
 void ABlasterCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -43,6 +47,16 @@ void ABlasterCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Ou
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME_CONDITION(ABlasterCharacter, OverlappingWeapon, COND_OwnerOnly);
+}
+
+void ABlasterCharacter::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+
+	if (CombatComponent)
+	{
+		CombatComponent->Character = this;
+	}
 }
 
 void ABlasterCharacter::BeginPlay()
@@ -132,6 +146,16 @@ void ABlasterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 		{
 			UE_LOG(LogTemp, Error, TEXT("JumpAction is null!"));
 		}
+
+		if (EquipAction)
+		{
+			UE_LOG(LogTemp, Display, TEXT("Binding EquipInput"));
+			Input->BindAction(EquipAction, ETriggerEvent::Triggered, this, &ABlasterCharacter::EquipInput);
+		}
+		else
+		{
+			UE_LOG(LogTemp, Error, TEXT("JumpAction is null!"));
+		}
 	}
 }
 
@@ -164,6 +188,14 @@ void ABlasterCharacter::JumpInput(const FInputActionInstance& Instance)
 void ABlasterCharacter::StopJumpingInput(const FInputActionInstance& Instance)
 {
 	Super::StopJumping();
+}
+
+void ABlasterCharacter::EquipInput(const FInputActionInstance& Instance)
+{
+	if (HasAuthority() && CombatComponent)
+	{
+		CombatComponent->EquipWeapon(OverlappingWeapon);
+	}
 }
 
 void ABlasterCharacter::UpdateOverheadWidgetText()

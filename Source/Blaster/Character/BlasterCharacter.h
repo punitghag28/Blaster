@@ -9,6 +9,7 @@
 #include "BlasterCharacter.generated.h"
 
 class UWidgetComponent;
+class UCombatComponent;
 class AWeapon;
 
 UCLASS()
@@ -22,6 +23,7 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+	virtual void PostInitializeComponents() override;
 	
 	void SetOverlappingWeapon(AWeapon* Weapon);
 
@@ -34,6 +36,7 @@ protected:
 	void LookInput(const FInputActionInstance& Instance);
 	void JumpInput(const FInputActionInstance& Instance);
 	void StopJumpingInput(const FInputActionInstance& Instance);
+	void EquipInput(const FInputActionInstance& Instance);
 
 
 private:
@@ -55,12 +58,18 @@ public:
 	UPROPERTY(EditAnywhere, Category = Input)
 	UInputAction* JumpAction;
 
+	UPROPERTY(EditAnywhere, Category = Input)
+	UInputAction* EquipAction;
+
 private:
 	UPROPERTY(VisibleAnywhere, Category = Camera)
 	class USpringArmComponent* CameraBoom;
 
 	UPROPERTY(VisibleAnywhere, Category = Camera)
 	class UCameraComponent* FollowCamera;
+
+	UPROPERTY(VisibleAnywhere)
+	UCombatComponent* CombatComponent;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	UWidgetComponent* OverheadWidget;
