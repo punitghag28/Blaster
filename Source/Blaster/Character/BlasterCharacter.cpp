@@ -40,6 +40,8 @@ ABlasterCharacter::ABlasterCharacter()
 
 	CombatComponent = CreateDefaultSubobject<UCombatComponent>(TEXT("CombatComponent"));
 	CombatComponent->SetIsReplicated(true);
+
+	GetCharacterMovement()->NavAgentProps.bCanCrouch = true;
 }
 
 void ABlasterCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -154,7 +156,17 @@ void ABlasterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 		}
 		else
 		{
-			UE_LOG(LogTemp, Error, TEXT("JumpAction is null!"));
+			UE_LOG(LogTemp, Error, TEXT("EquipAction is null!"));
+		}
+
+		if (CrouchAction)
+		{
+			UE_LOG(LogTemp, Display, TEXT("Binding CrouchInput"));
+			Input->BindAction(CrouchAction, ETriggerEvent::Started, this, &ABlasterCharacter::CrouchInput);
+		}
+		else
+		{
+			UE_LOG(LogTemp, Error, TEXT("CrouchAction is null!"));
 		}
 	}
 }
@@ -202,6 +214,18 @@ void ABlasterCharacter::EquipInput(const FInputActionInstance& Instance)
 		{
 			ServerEquipButtonPressed();
 		}
+	}
+}
+
+void ABlasterCharacter::CrouchInput(const FInputActionInstance& Instance)
+{
+	if (bIsCrouched)
+	{
+		UnCrouch();
+	}
+	else
+	{
+		Crouch();
 	}
 }
 

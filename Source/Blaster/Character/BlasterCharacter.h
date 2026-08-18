@@ -38,6 +38,7 @@ protected:
 	void JumpInput(const FInputActionInstance& Instance);
 	void StopJumpingInput(const FInputActionInstance& Instance);
 	void EquipInput(const FInputActionInstance& Instance);
+	void CrouchInput(const FInputActionInstance& Instance);
 
 
 private:
@@ -64,6 +65,9 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = Input)
 	UInputAction* EquipAction;
+
+	UPROPERTY(EditAnywhere, Category = Input)
+	UInputAction* CrouchAction;
 
 private:
 	UPROPERTY(VisibleAnywhere, Category = Camera)
