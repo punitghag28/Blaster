@@ -27,6 +27,7 @@ public:
 	
 	void SetOverlappingWeapon(AWeapon* Weapon);
 	bool IsWeaponEquipped();
+	bool IsAiming();
 
 protected:
 	virtual void BeginPlay() override;
@@ -39,7 +40,8 @@ protected:
 	void StopJumpingInput(const FInputActionInstance& Instance);
 	void EquipInput(const FInputActionInstance& Instance);
 	void CrouchInput(const FInputActionInstance& Instance);
-
+	void AimInputStarted(const FInputActionInstance& Instance);
+	void AimInputReleased(const FInputActionInstance& Instance);
 
 private:
 	void UpdateOverheadWidgetText();
@@ -68,6 +70,9 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = Input)
 	UInputAction* CrouchAction;
+
+	UPROPERTY(EditAnywhere, Category = Input)
+	UInputAction* AimAction;
 
 private:
 	UPROPERTY(VisibleAnywhere, Category = Camera)

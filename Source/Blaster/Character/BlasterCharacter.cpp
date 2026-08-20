@@ -168,6 +168,17 @@ void ABlasterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 		{
 			UE_LOG(LogTemp, Error, TEXT("CrouchAction is null!"));
 		}
+
+		if (AimAction)
+		{
+			UE_LOG(LogTemp, Display, TEXT("Binding AimInput"));
+			Input->BindAction(AimAction, ETriggerEvent::Started, this, &ABlasterCharacter::AimInputStarted);
+			Input->BindAction(AimAction, ETriggerEvent::Completed, this, &ABlasterCharacter::AimInputReleased);
+		}
+		else
+		{
+			UE_LOG(LogTemp, Error, TEXT("AimAction is null!"));
+		}
 	}
 }
 
@@ -229,6 +240,22 @@ void ABlasterCharacter::CrouchInput(const FInputActionInstance& Instance)
 	}
 }
 
+void ABlasterCharacter::AimInputStarted(const FInputActionInstance& Instance)
+{
+	if (CombatComponent)
+	{
+		CombatComponent->SetAiming(true);
+	}
+}
+
+void ABlasterCharacter::AimInputReleased(const FInputActionInstance& Instance)
+{
+	if (CombatComponent)
+	{
+		CombatComponent->SetAiming(false);
+	}
+}
+
 void ABlasterCharacter::UpdateOverheadWidgetText()
 {
 	if (OverheadWidget)
@@ -259,6 +286,11 @@ void ABlasterCharacter::SetOverlappingWeapon(AWeapon* Weapon)
 bool ABlasterCharacter::IsWeaponEquipped()
 {
 	return CombatComponent && CombatComponent->EquippedWeapon;
+}
+
+bool ABlasterCharacter::IsAiming()
+{
+	return CombatComponent && CombatComponent->bAiming;
 }
 
 void ABlasterCharacter::OnRep_OverlappingWeapon(AWeapon* LastWeapon)
