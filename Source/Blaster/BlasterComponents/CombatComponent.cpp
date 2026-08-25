@@ -12,13 +12,21 @@
 UCombatComponent::UCombatComponent()
 {
 	PrimaryComponentTick.bCanEverTick = false;
-
+	BaseWalkSpeed = 600.0f;
+	AimWalkSpeed = 450.0f;
 }
 
 void UCombatComponent::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	if (Character)
+	{
+		if (UCharacterMovementComponent* CharacterMovement = Character->GetCharacterMovement())
+		{
+			CharacterMovement->MaxWalkSpeed = BaseWalkSpeed;
+		}
+	}
 }
 
 
@@ -26,11 +34,27 @@ void UCombatComponent::SetAiming(bool bIsAiming)
 {
 	bAiming = bIsAiming;
 	ServerSetAiming(bIsAiming);
+
+	if (Character)
+	{
+		if (UCharacterMovementComponent* CharacterMovement = Character->GetCharacterMovement())
+		{
+			CharacterMovement->MaxWalkSpeed = bIsAiming ? AimWalkSpeed : BaseWalkSpeed;
+		}
+	}
 }
 
 void UCombatComponent::ServerSetAiming_Implementation(bool bIsAiming)
 {
 	bAiming = bIsAiming;
+
+	if (Character)
+	{
+		if (UCharacterMovementComponent* CharacterMovement = Character->GetCharacterMovement())
+		{
+			CharacterMovement->MaxWalkSpeed = bIsAiming ? AimWalkSpeed : BaseWalkSpeed;
+		}
+	}
 }
 
 // Called every frame
