@@ -47,6 +47,8 @@ ABlasterCharacter::ABlasterCharacter()
 
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
 	GetMesh()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
+
+	TurningInPlace = ETurningInPlace::ETIP_NotTurning;
 }
 
 void ABlasterCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -220,6 +222,7 @@ void ABlasterCharacter::StopJumpingInput(const FInputActionInstance& Instance)
 
 void ABlasterCharacter::EquipInput(const FInputActionInstance& Instance)
 {
+	StartingAimRotation = FRotator(0.0f, GetBaseAimRotation().Yaw, 0.0f);
 	if (CombatComponent)
 	{
 		if (HasAuthority())
@@ -280,6 +283,8 @@ void ABlasterCharacter::AimOffset(float DeltaTime)
 		FRotator DeltaAimRotation = UKismetMathLibrary::NormalizedDeltaRotator(CurrentAimRotation, StartingAimRotation);
 		AO_Yaw = DeltaAimRotation.Yaw;
 		bUseControllerRotationYaw = false;
+
+		TurnInPlace(DeltaTime);
 	}
 	if (Speed > 0.0f || bIsInAir)
 	{
@@ -287,6 +292,8 @@ void ABlasterCharacter::AimOffset(float DeltaTime)
 		StartingAimRotation = FRotator(0.0f, GetBaseAimRotation().Yaw, 0.0f);
 		AO_Yaw = 0.0f;
 		bUseControllerRotationYaw = true;
+
+		TurningInPlace = ETurningInPlace::ETIP_NotTurning;
 	}
 
 	AO_Pitch = GetBaseAimRotation().Pitch;
@@ -296,6 +303,19 @@ void ABlasterCharacter::AimOffset(float DeltaTime)
 		FVector2D InRange(270.0f, 360.0f);
 		FVector2D OutRange(-90.0f, 0.0f);
 		AO_Pitch = FMath::GetMappedRangeValueClamped(InRange, OutRange, AO_Pitch);
+	}
+}
+
+
+void ABlasterCharacter::TurnInPlace(float DeltaTime)
+{
+	if (AO_Yaw > 90.0f)
+	{
+		TurningInPlace = ETurningInPlace::ETIP_Right;
+	}
+	else if (AO_Yaw < -90.0f)
+	{
+		TurningInPlace = ETurningInPlace::ETIP_Left;
 	}
 }
 
@@ -360,8 +380,10 @@ void ABlasterCharacter::OnRep_OverlappingWeapon(AWeapon* LastWeapon)
 
 void ABlasterCharacter::ServerEquipButtonPressed_Implementation()
 {
+	StartingAimRotation = FRotator(0.0f, GetBaseAimRotation().Yaw, 0.0f);
 	if (CombatComponent)
 	{
 		CombatComponent->EquipWeapon(OverlappingWeapon);
 	}
 }
+
