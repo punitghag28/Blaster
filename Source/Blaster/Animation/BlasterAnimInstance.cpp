@@ -6,6 +6,7 @@
 #include "Kismet/KismetMathLibrary.h"
 
 #include "Character/BlasterCharacter.h"
+#include "Weapon/Weapon.h"
 
 void UBlasterAnimInstance::NativeInitializeAnimation()
 {
@@ -32,6 +33,7 @@ void UBlasterAnimInstance::NativeUpdateAnimation(float DeltaTime)
     bIsAccelerating = BlasterCharacter->GetCharacterMovement()->GetCurrentAcceleration().Size() > 0.0f ? true : false;
 
     bWeaponEquipped = BlasterCharacter->IsWeaponEquipped();
+    EquippedWeapon = BlasterCharacter->GetEquippedWeapon();
 
     bIsCrouched = BlasterCharacter->bIsCrouched;
 
@@ -53,4 +55,17 @@ void UBlasterAnimInstance::NativeUpdateAnimation(float DeltaTime)
 
     AO_Yaw = BlasterCharacter->GetAO_Yaw();
     AO_Pitch = BlasterCharacter->GetAO_Pitch();
+
+    if (bWeaponEquipped && EquippedWeapon && EquippedWeapon->GetWeaponMesh() && BlasterCharacter->GetMesh())
+    {
+        LeftHandTransform = EquippedWeapon->GetWeaponMesh()->GetSocketTransform(FName("LeftHandSocket"), ERelativeTransformSpace::RTS_World);
+        FVector OutPosition;
+        FRotator OutRotation;
+        // The reason we are using "hand_r" as the reference bone for BoneSpace transform is because we need the socket's transform (LeftHandTransform) relative to a bone which stays constant.
+        // the transform would be relatively constant to hand_r while animating
+        BlasterCharacter->GetMesh()->TransformToBoneSpace(FName("hand_r"), LeftHandTransform.GetLocation(), FRotator::ZeroRotator, OutPosition, OutRotation);
+
+        LeftHandTransform.SetLocation(OutPosition);
+        LeftHandTransform.SetRotation(FQuat(OutRotation));
+    }
 }
