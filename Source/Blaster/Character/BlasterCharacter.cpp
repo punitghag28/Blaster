@@ -35,15 +35,15 @@ ABlasterCharacter::ABlasterCharacter()
 	bUseControllerRotationRoll = false;
 	bUseControllerRotationPitch = false;
 
-	GetCharacterMovement()->bOrientRotationToMovement = true;
-
 	OverheadWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("OverheadWidget"));
 	OverheadWidget->SetupAttachment(RootComponent);
 
 	CombatComponent = CreateDefaultSubobject<UCombatComponent>(TEXT("CombatComponent"));
 	CombatComponent->SetIsReplicated(true);
 
+	GetCharacterMovement()->bOrientRotationToMovement = true;
 	GetCharacterMovement()->NavAgentProps.bCanCrouch = true;
+	GetCharacterMovement()->RotationRate = FRotator(0.f, 0.f, 850.f);
 
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
 	GetMesh()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
@@ -68,6 +68,18 @@ void ABlasterCharacter::PostInitializeComponents()
 	if (CombatComponent)
 	{
 		CombatComponent->Character = this;
+	}
+}
+
+void ABlasterCharacter::Jump()
+{
+	if (bIsCrouched)
+	{
+		UnCrouch();
+	}
+	else
+	{
+		Super::Jump();
 	}
 }
 
@@ -215,7 +227,7 @@ void ABlasterCharacter::LookInput(const FInputActionInstance& Instance)
 
 void ABlasterCharacter::JumpInput(const FInputActionInstance& Instance)
 {
-	Super::Jump();
+	Jump();
 }
 
 void ABlasterCharacter::StopJumpingInput(const FInputActionInstance& Instance)
