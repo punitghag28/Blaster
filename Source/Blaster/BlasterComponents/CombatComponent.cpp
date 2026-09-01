@@ -60,9 +60,10 @@ void UCombatComponent::ServerSetAiming_Implementation(bool bIsAiming)
 void UCombatComponent::FireInputPressed(bool bPressed)
 {
 	bFireInputPressed = bPressed;
-	if (Character && bPressed)
+	if (Character && bPressed && EquippedWeapon)
 	{
 		Character->PlayFireMontage(bAiming);
+		EquippedWeapon->Fire();
 	}
 }
 
