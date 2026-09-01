@@ -12,6 +12,7 @@
 class UWidgetComponent;
 class UCombatComponent;
 class AWeapon;
+class UAnimMontage;
 
 UCLASS()
 class BLASTER_API ABlasterCharacter : public ACharacter
@@ -35,6 +36,8 @@ public:
 	AWeapon* GetEquippedWeapon();
 	FORCEINLINE ETurningInPlace GetTurningInPlace() const { return TurningInPlace; }
 
+	void PlayFireMontage(bool bAiming);
+
 protected:
 	virtual void BeginPlay() override;
 	virtual void OnRep_PlayerState() override;
@@ -48,6 +51,9 @@ protected:
 	void CrouchInput(const FInputActionInstance& Instance);
 	void AimInputStarted(const FInputActionInstance& Instance);
 	void AimInputReleased(const FInputActionInstance& Instance);
+	void FireInputStarted(const FInputActionInstance& Instance);
+	void FireInputReleased(const FInputActionInstance& Instance);
+
 	void AimOffset(float DeltaTime);
 
 private:
@@ -83,6 +89,9 @@ public:
 	UPROPERTY(EditAnywhere, Category = Input)
 	UInputAction* AimAction;
 
+	UPROPERTY(EditAnywhere, Category = Input)
+	UInputAction* FireAction;
+
 private:
 	UPROPERTY(VisibleAnywhere, Category = Camera)
 	class USpringArmComponent* CameraBoom;
@@ -105,4 +114,7 @@ private:
 	FRotator StartingAimRotation;
 
 	ETurningInPlace TurningInPlace;
+
+	UPROPERTY(EditAnywhere, Category = Combat)
+	UAnimMontage* FireWeaponMontage;
 };

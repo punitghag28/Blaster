@@ -15,6 +15,7 @@
 #include "Net/UnrealNetwork.h"
 #include "Weapon/Weapon.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Animation/BlasterAnimInstance.h"
 
 // Sets default values
 ABlasterCharacter::ABlasterCharacter()
@@ -201,6 +202,17 @@ void ABlasterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 		{
 			UE_LOG(LogTemp, Error, TEXT("AimAction is null!"));
 		}
+
+		if (FireAction)
+		{
+			UE_LOG(LogTemp, Display, TEXT("Binding FireInput"));
+			Input->BindAction(FireAction, ETriggerEvent::Started, this, &ABlasterCharacter::FireInputStarted);
+			Input->BindAction(FireAction, ETriggerEvent::Completed, this, &ABlasterCharacter::FireInputReleased);
+		}
+		else
+		{
+			UE_LOG(LogTemp, Error, TEXT("FireAction is null!"));
+		}
 	}
 }
 
@@ -276,6 +288,22 @@ void ABlasterCharacter::AimInputReleased(const FInputActionInstance& Instance)
 	if (CombatComponent)
 	{
 		CombatComponent->SetAiming(false);
+	}
+}
+
+void ABlasterCharacter::FireInputStarted(const FInputActionInstance& Instance)
+{
+	if (CombatComponent)
+	{
+		CombatComponent->FireInputPressed(true);
+	}
+}
+
+void ABlasterCharacter::FireInputReleased(const FInputActionInstance& Instance)
+{
+	if (CombatComponent)
+	{
+		CombatComponent->FireInputPressed(false);
 	}
 }
 
@@ -394,6 +422,22 @@ AWeapon* ABlasterCharacter::GetEquippedWeapon()
 	}
 
 	return CombatComponent->EquippedWeapon;
+}
+
+void ABlasterCharacter::PlayFireMontage(bool bAiming)
+{
+	if (!CombatComponent || !CombatComponent->EquippedWeapon)
+	{
+		return;
+	}
+
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if (AnimInstance && FireWeaponMontage)
+	{
+		AnimInstance->Montage_Play(FireWeaponMontage);
+		FName SectionName = bAiming ? FName("RifleIronSights") : FName("RifleHip");
+		AnimInstance->Montage_JumpToSection(SectionName);
+	}
 }
 
 void ABlasterCharacter::OnRep_OverlappingWeapon(AWeapon* LastWeapon)
