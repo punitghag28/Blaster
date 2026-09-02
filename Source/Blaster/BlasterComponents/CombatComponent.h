@@ -60,4 +60,6 @@ private:
 		
 	UPROPERTY(EditAnywhere)
 	bool bFireInputPressed;
+
+	FVector HitTarget;
 };
