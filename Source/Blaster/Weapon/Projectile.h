@@ -8,6 +8,8 @@
 
 class UBoxComponent;
 class UProjectileMovementComponent;
+class UParticleSystem;
+class UParticleSystemComponent;
 
 UCLASS()
 class BLASTER_API AProjectile : public AActor
@@ -27,4 +29,9 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	UProjectileMovementComponent* ProjectileMovementComponent;
+
+	UPROPERTY(EditAnywhere)
+	class UParticleSystem* Tracer;
+
+	UParticleSystemComponent* TracerComponent;
 };
