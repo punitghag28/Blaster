@@ -8,6 +8,8 @@
 #include "Net/UnrealNetwork.h"
 #include "Animation/AnimationAsset.h"
 #include "Components/SkeletalMeshComponent.h"
+#include "BulletCasing.h"
+#include "Engine/SkeletalMeshSocket.h"
 
 AWeapon::AWeapon()
 {
@@ -94,6 +96,18 @@ void AWeapon::Fire(const FVector& HitTarget)
 	if (FireAnimation && WeaponMesh)
 	{
 		WeaponMesh->PlayAnimation(FireAnimation, false);
+	}
+	if (BulletCasingClass)
+	{
+		if (const USkeletalMeshSocket* AmmoEjectSocket = GetWeaponMesh()->GetSocketByName(FName("AmmoEject")))
+		{
+			FTransform SocketTransform = AmmoEjectSocket->GetSocketTransform(GetWeaponMesh());
+
+			if (UWorld* World = GetWorld())
+			{
+				World->SpawnActor<ABulletCasing>(BulletCasingClass, SocketTransform.GetLocation(), SocketTransform.GetRotation().Rotator());
+			}
+		}
 	}
 }
 
