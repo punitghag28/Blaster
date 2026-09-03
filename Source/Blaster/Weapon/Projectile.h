@@ -10,6 +10,7 @@ class UBoxComponent;
 class UProjectileMovementComponent;
 class UParticleSystem;
 class UParticleSystemComponent;
+class USoundCue;
 
 UCLASS()
 class BLASTER_API AProjectile : public AActor
@@ -23,6 +24,11 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
+	UFUNCTION()
+	virtual void OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, FVector NormalImpulse, const FHitResult& Hit);
+
+	virtual void Destroyed() override;
+
 private:	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	UBoxComponent* CollisionBox;
@@ -34,4 +40,11 @@ private:
 	class UParticleSystem* Tracer;
 
 	UParticleSystemComponent* TracerComponent;
+
+	UPROPERTY(EditAnywhere)
+	UParticleSystem* ImpactParticles;
+
+	UPROPERTY(EditAnywhere)
+	USoundCue* ImpactSound;
+
 };
