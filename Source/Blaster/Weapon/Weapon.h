@@ -10,6 +10,7 @@ class USphereComponent;
 class UWidgetComponent;
 class UAnimationAsset;
 class ABulletCasing;
+class UTexture2D;
 
 UENUM(BlueprintType)
 enum class EWeaponState : uint8 
@@ -50,6 +51,25 @@ private:
 	UFUNCTION()
 	void OnRep_WeaponState();
 
+public:
+	/**
+	* Textures for the weapon crosshairs
+	*/
+	UPROPERTY(EditAnywhere, Category = "Crosshairs")
+	UTexture2D* CrosshairsCenter;
+
+	UPROPERTY(EditAnywhere, Category = "Crosshairs")
+	UTexture2D* CrosshairsLeft;
+
+	UPROPERTY(EditAnywhere, Category = "Crosshairs")
+	UTexture2D* CrosshairsRight;
+
+	UPROPERTY(EditAnywhere, Category = "Crosshairs")
+	UTexture2D* CrosshairsTop;
+
+	UPROPERTY(EditAnywhere, Category = "Crosshairs")
+	UTexture2D* CrosshairsBottom;
+
 private:
 	UPROPERTY(VisibleAnywhere, Category = "Weapon Properties")
 	USkeletalMeshComponent* WeaponMesh;
@@ -68,6 +88,5 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
 	TSubclassOf<ABulletCasing> BulletCasingClass;
-public:	
 
 };
