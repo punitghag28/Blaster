@@ -66,4 +66,11 @@ private:
 		
 	UPROPERTY(EditAnywhere)
 	bool bFireInputPressed;
+
+	/**
+	 * HUD & Crosshairs
+	 */
+
+	float CrosshairVelocityFactor;
+	float CrosshairInAirFactor;
 };
