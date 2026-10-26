@@ -40,6 +40,9 @@ public:
 	FVector GetHitTarget() const;
 	FORCEINLINE UCameraComponent* GetFollowCamera() const { return FollowCamera; }
 
+	UFUNCTION(NetMulticast, Unreliable)
+	void MulticastHit();
+
 	void PlayFireMontage(bool bAiming);
 
 protected:
@@ -59,6 +62,7 @@ protected:
 	void FireInputReleased(const FInputActionInstance& Instance);
 
 	void AimOffset(float DeltaTime);
+	void PlayHitReactMontage();
 
 private:
 	void UpdateOverheadWidgetText();
@@ -72,6 +76,7 @@ private:
 	void TurnInPlace(float DeltaTime);
 
 	void HideCameraIfCharacterClose();
+
 
 public:
 	UPROPERTY(EditAnywhere, Category = Input)
@@ -123,6 +128,9 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = Combat)
 	UAnimMontage* FireWeaponMontage;
+
+	UPROPERTY(EditAnywhere, Category = Combat)
+	UAnimMontage* HitReactMontage;
 
 	UPROPERTY(EditAnywhere, Category = Combat)
 	float CameraThreshold = 200.f;
