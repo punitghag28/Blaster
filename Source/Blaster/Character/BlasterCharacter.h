@@ -71,6 +71,8 @@ private:
 
 	void TurnInPlace(float DeltaTime);
 
+	void HideCameraIfCharacterClose();
+
 public:
 	UPROPERTY(EditAnywhere, Category = Input)
 	UInputMappingContext* InputMapping;
@@ -121,4 +123,7 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = Combat)
 	UAnimMontage* FireWeaponMontage;
+
+	UPROPERTY(EditAnywhere, Category = Combat)
+	float CameraThreshold = 200.f;
 };
