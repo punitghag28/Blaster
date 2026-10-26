@@ -13,6 +13,7 @@ class UWidgetComponent;
 class UCombatComponent;
 class AWeapon;
 class UAnimMontage;
+class UCameraComponent;
 
 UCLASS()
 class BLASTER_API ABlasterCharacter : public ACharacter
@@ -36,6 +37,7 @@ public:
 	AWeapon* GetEquippedWeapon();
 	FORCEINLINE ETurningInPlace GetTurningInPlace() const { return TurningInPlace; }
 	FVector GetHitTarget() const;
+	FORCEINLINE UCameraComponent* GetFollowCamera() const { return FollowCamera; }
 
 	void PlayFireMontage(bool bAiming);
 

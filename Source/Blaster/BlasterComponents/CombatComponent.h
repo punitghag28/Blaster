@@ -48,6 +48,9 @@ protected:
 	void SetHUDCrosshairs(float DeltaTime);
 
 private:
+	void InterpFOV(float DeltaTime);
+
+private:
 	ABlasterCharacter* Character;
 	ABlasterPlayerController* Controller;
 	ABlasterHUD* HUD;
@@ -75,4 +78,19 @@ private:
 	float CrosshairInAirFactor;
 
 	FVector HitTarget;
+
+	/**
+	* Aiming and FOV
+	*/
+
+	// Field of view when not aiming; set to camera's base FOV in BeginPlay
+	float DefaultFOV;
+
+	UPROPERTY(EditAnywhere, Category = Combat)
+	float ZoomedFOV = 30.f;
+
+	float CurrentFOV;
+
+	UPROPERTY(EditAnywhere, Category = Combat)
+	float ZoomInterpSpeed = 20.f;
 };
