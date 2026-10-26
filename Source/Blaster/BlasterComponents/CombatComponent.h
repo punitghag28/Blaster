@@ -76,6 +76,11 @@ private:
 
 	float CrosshairVelocityFactor;
 	float CrosshairInAirFactor;
+	float CrosshairAimFactor;
+	float CrosshairShootingFactor;
+
+	UPROPERTY(EditAnywhere, Category = Combat)
+	float BaselineCrosshairFactor = 0.5f;
 
 	FVector HitTarget;
 

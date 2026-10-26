@@ -108,7 +108,31 @@ void UCombatComponent::SetHUDCrosshairs(float DeltaTime)
 			CrosshairInAirFactor = Character->GetCharacterMovement()->IsFalling() ? FMath::FInterpTo(CrosshairInAirFactor, 2.25f, DeltaTime, 2.25f) :
 																					FMath::FInterpTo(CrosshairInAirFactor, 0.f, DeltaTime, 30.f);
 			
-			HUDPackage.CrosshairSpread = CrosshairVelocityFactor + CrosshairInAirFactor;
+			if (bAiming)
+			{
+				if (EquippedWeapon)
+				{
+					CrosshairAimFactor = FMath::FInterpTo(CrosshairAimFactor, 0.6f, DeltaTime, EquippedWeapon->GetZoomInterpSpeed());
+				}
+			}
+			else
+			{
+				CrosshairAimFactor = FMath::FInterpTo(CrosshairAimFactor, 0.f, DeltaTime, 30.f);
+			}
+
+			if (bFireInputPressed)
+			{
+				if (EquippedWeapon)
+				{
+					CrosshairShootingFactor = FMath::FInterpTo(CrosshairAimFactor, 0.75f, DeltaTime, EquippedWeapon->GetZoomInterpSpeed());
+				}
+			}
+			else
+			{
+				CrosshairShootingFactor = FMath::FInterpTo(CrosshairAimFactor, 0.f, DeltaTime, 30.f);
+			}
+
+			HUDPackage.CrosshairSpread = BaselineCrosshairFactor + CrosshairVelocityFactor + CrosshairInAirFactor - CrosshairAimFactor + CrosshairShootingFactor;
 
 			HUD->SetHUDPackage(HUDPackage);
 		}
@@ -124,7 +148,7 @@ void UCombatComponent::InterpFOV(float DeltaTime)
 
 	if (bAiming)
 	{
-		CurrentFOV = FMath::FInterpTo(CurrentFOV, EquippedWeapon->GetZoomedFOV(), DeltaTime, EquippedWeapon->GetZoomedInterpSpeed());
+		CurrentFOV = FMath::FInterpTo(CurrentFOV, EquippedWeapon->GetZoomedFOV(), DeltaTime, EquippedWeapon->GetZoomInterpSpeed());
 	}
 	else
 	{

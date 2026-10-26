@@ -38,7 +38,7 @@ public:
 	FORCEINLINE USphereComponent* GetAreaSphere() const { return AreaSphere; }
 	FORCEINLINE USkeletalMeshComponent* GetWeaponMesh() const { return WeaponMesh; }
 	FORCEINLINE float GetZoomedFOV() const { return ZoomedFOV; }
-	FORCEINLINE float GetZoomedInterpSpeed() const { return ZoomedInterpSpeed; }
+	FORCEINLINE float GetZoomInterpSpeed() const { return ZoomInterpSpeed; }
 
 protected:
 	virtual void BeginPlay() override;
@@ -99,5 +99,5 @@ private:
 	float ZoomedFOV = 30.f;
 
 	UPROPERTY(EditAnywhere)
-	float ZoomedInterpSpeed = 20.f;
+	float ZoomInterpSpeed = 20.f;
 };
