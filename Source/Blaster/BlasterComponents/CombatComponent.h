@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "HUD/BlasterHUD.h"
+
 #include "CombatComponent.generated.h"
 
 class ABlasterCharacter;
@@ -83,6 +85,8 @@ private:
 	float BaselineCrosshairFactor = 0.5f;
 
 	FVector HitTarget;
+
+	FHUDPackage HUDPackage;
 
 	/**
 	* Aiming and FOV
